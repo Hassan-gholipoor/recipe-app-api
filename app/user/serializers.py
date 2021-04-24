@@ -12,6 +12,17 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)
 
+    def update(self, instance, validated_date):
+        """Update a user , setting the password correctly an return it"""
+        password = validated_date.pop('password', None)
+        user = super().update(instance, validated_date)
+
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
+
 
 class AuthTokenSerializer(serializers.Serializer):
     """Serializer for the user authentication object"""
